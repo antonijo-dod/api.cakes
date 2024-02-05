@@ -1,0 +1,39 @@
+version: '3.5'
+networks:
+  nest:
+    driver: bridge
+
+services:
+  db:
+    image: 'mysql/mysql-server:8.0'
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "TiN@1987"
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_DATABASE: 'cakes'
+      MYSQL_USER: 'admin'
+      MYSQL_PASSWORD: 'TiN@1987'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    container_name: mysql
+    volumes:
+      - ./mysqldata:/var/lib/mysql
+    ports:
+      - '3306:3306'
+    networks:
+      - nest
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nest-docker-mysql
+    environment:
+      - PORT=3000
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
+    volumes:
+      - ./src:/app/src
+    networks:
+      - nest
